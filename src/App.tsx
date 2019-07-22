@@ -1,8 +1,18 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {Board} from "./Logic";
 
 const App: React.FC = () => {
+
+  let board = new Board(10, 20);
+  let squares = board.initSquares();
+
+  for (let i = 0; i < 4; i++) board.moveShapeDown(squares);
+  board.rotateShape(squares);
+
+  console.log(squares);
+
   return (
     <div className="App">
       <header className="App-header">
