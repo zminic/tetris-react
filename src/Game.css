@@ -9,10 +9,28 @@
   border-right: 10px outset #ccc;
 }
 
-.info > div
+.info
 {
   color: #efefef;
+  line-height: 1.2em;
+}
+
+.info fieldset
+{
+  border: 1px solid #eee;
   padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.info span.highlight
+{
+  color: rgb(35, 134, 247);
+}
+
+.info .board
+{
+  height: 110px;
 }
 
 .square

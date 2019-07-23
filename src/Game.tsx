@@ -7,7 +7,9 @@ import Info from './Info';
 interface IGameState
 {
   squares: logic.Square[][],
-  nextShape: logic.Square[][]
+  nextShape: logic.Square[][],
+  gameOver: boolean,
+  lineCount: number
 }
 
 export default class Game extends Component<{}, IGameState>
@@ -24,7 +26,9 @@ export default class Game extends Component<{}, IGameState>
 
     this.state = { 
       squares: this.board.squares,
-      nextShape: this.board.getNextShape()
+      nextShape: this.board.getNextShape(),
+      gameOver: false,
+      lineCount: 0
     };
   }
 
@@ -38,13 +42,7 @@ export default class Game extends Component<{}, IGameState>
     document.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  onTimerTick()
-  {
-    if (this.board.moveShapeDown() || (!this.board.gameOver && this.board.clearCompleted()))
-    {
-      this.setState({ squares: this.board.squares });
-    }
-  }
+  onTimerTick = () => this.moveDown();
 
   handleKeyDown = (event: KeyboardEvent) => {
     if (event.keyCode === 32) // space
@@ -54,7 +52,12 @@ export default class Game extends Component<{}, IGameState>
       if (!this.board.gameOver)
         this.board.clearCompleted();
 
-      this.setState({ squares: this.board.squares});
+      this.setState({ 
+        squares: this.board.squares,
+        nextShape: this.board.getNextShape(),
+        gameOver: this.board.gameOver,
+        lineCount: this.board.lineCount
+      });
     }
     else if (event.keyCode === 37) // left
     {
@@ -73,8 +76,7 @@ export default class Game extends Component<{}, IGameState>
     }
     else if (event.keyCode === 40) // down
     {
-      if (this.board.moveShapeDown() || (!this.board.gameOver && this.board.clearCompleted()))
-        this.setState({ squares: this.board.squares});
+      this.moveDown();
     }
     else if (event.keyCode === 80) // p (pause)
     {
@@ -82,14 +84,54 @@ export default class Game extends Component<{}, IGameState>
     }
   }
 
+  moveDown()
+  {
+    if (this.board.moveShapeDown())
+    {
+      this.setState({squares: this.board.squares});
+    }
+    else
+    {
+      if (this.board.clearCompleted())
+        this.setState({ squares: this.board.squares});
+
+      this.setState({
+        nextShape: this.board.getNextShape(),
+        gameOver: this.board.gameOver,
+        lineCount: this.board.lineCount
+      });
+    }
+  }
+
+  stopTimer = () => window.clearInterval(this.timer);
+  startTimer =() => {
+    this.stopTimer();
+    this.timer = window.setInterval(this.onTimerTick.bind(this), 500);
+  };
+
   togglePause()
   {
     if (this.paused)
-      this.timer = window.setInterval(this.onTimerTick.bind(this), 500);
+      this.startTimer();
     else
-      window.clearInterval(this.timer);
+      this.stopTimer();
 
     this.paused = !this.paused;
+  }
+
+  newGame()
+  {
+    this.board = new logic.Board(10, 20);
+    this.paused = false;
+
+    this.setState({ 
+      squares: this.board.squares,
+      nextShape: this.board.getNextShape(),
+      gameOver: false,
+      lineCount: 0
+    });
+
+    this.startTimer();
   }
 
   getBoardWidth = () => this.board.m * 35;
@@ -103,7 +145,13 @@ export default class Game extends Component<{}, IGameState>
       <React.Fragment>
       <div className="game" style={{width: this.getGameWidth()}}>
         <Board squares={this.state.squares} style={{ width: this.getBoardWidth(), float: "left"}}></Board>
-        <Info nextShape={this.state.nextShape} style={{ width: this.getInfoWidth(), float: "left"}}></Info> 
+        <Info 
+          nextShape={this.state.nextShape} 
+          style={{ width: this.getInfoWidth(), float: "left"}} 
+          isGameOver={this.state.gameOver}
+          lineCount={this.state.lineCount}
+          onPause={this.togglePause.bind(this)}
+          onNewGame={this.newGame.bind(this)}></Info> 
         <div className="clear"></div>
       </div>
       </React.Fragment>

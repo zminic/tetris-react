@@ -68,6 +68,7 @@ export class Board
     private shapePosition!: Point;
     public squares!: Square[][];
     public gameOver: boolean = false;
+    public lineCount: number = 0;
 
     constructor(public m: number, public n: number)
     {
@@ -190,6 +191,7 @@ export class Board
             if (complete)
             {
                 changed = true;
+                this.lineCount++;
 
                 for (let x = i; x >= 1; x--)
                     for(let y = 0; y < this.m; y++)
