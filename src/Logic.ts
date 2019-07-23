@@ -85,7 +85,7 @@ export class Board
         this.shapePosition = new Point(-1 * this.shape.getHeight(), Math.floor((this.m - this.shape.getWidth()) / 2));
     }
 
-    private cloneSquares(squares: Square[][]): Square[][]
+    private cloneSquares(): Square[][]
     {
         let result = [];
 
@@ -94,7 +94,7 @@ export class Board
             let row = [];
 
             for (let j = 0; j < this.m; j++)
-                row.push(new Square(squares[i][j].color, squares[i][j].isEmpty));
+                row.push(new Square(this.squares[i][j].color, this.squares[i][j].isEmpty));
 
             result.push(row);
         }
@@ -130,7 +130,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares(this.squares);
+        let result = this.cloneSquares();
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = 0; j < a; j++)
@@ -176,7 +176,7 @@ export class Board
 
     clearCompleted(): boolean
     {
-        let result = this.cloneSquares(this.squares);
+        let result = this.cloneSquares();
         let changed = false;
         let i = this.n - 1;
 
@@ -209,7 +209,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares(this.squares);
+        let result = this.cloneSquares();
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = 0; j < a; j++)
@@ -241,7 +241,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares(this.squares);
+        let result = this.cloneSquares();
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = a - 1; j >= 0; j--)
@@ -276,13 +276,11 @@ export class Board
 
         let rotated = this.shape.clone().rotate();
 
-        // compensate height when rotating
-        let p_rotated = new Point(p.i - (rotated.getHeight() - b), a);
+        // compensate width and height when rotating
+        let p_rotated = new Point(p.i - (rotated.getHeight() - b), p.j + rotated.getWidth() >= this.m ? p.j - (rotated.getWidth() - a) : p.j);
 
-        let result = this.cloneSquares(this.squares);
-
-        if (p_rotated.j + b >= this.m) return false;
-        if (p_rotated.i + a >= this.n) return false;
+        // work on cloned squares
+        let result = this.cloneSquares();
 
         // clear previous shape
         for (let i = 0; i < b; i++)
@@ -298,25 +296,23 @@ export class Board
             }
         }
 
+        // draw rotated shape
         for (let i = 0; i < rotated.getHeight(); i++)
         for (let j = 0; j < rotated.getWidth(); j++)
         {
             let s_i = p_rotated.i + i;
             let s_j = p_rotated.j + j;
 
-            if (rotated.getDef()[i][j] === 1)
+            if (rotated.getDef()[i][j] === 1 && s_i >= 0)
             {
-                if (s_i < 0 || !result[s_i][s_j].isEmpty)
-                {
-                    // collision
+                if (!result[s_i][s_j].isEmpty) // collision
                     return false;
-                }
 
                 result[s_i][s_j] = new Square(this.shape.color, false);
             }
-            
         }
 
+        // update shape and shape position if everyting went ok
         this.shapePosition = new Point(p_rotated.i, p_rotated.j);
         this.shape.rotate();
         this.squares = result;
