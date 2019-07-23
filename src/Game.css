@@ -1,0 +1,37 @@
+.game
+{
+  background-color: #333;
+  border: 10px outset #ccc;
+}
+
+.game > .board
+{
+  border-right: 10px outset #ccc;
+}
+
+.info > div
+{
+  color: #efefef;
+  padding: 10px;
+}
+
+.square
+{
+  width: 15px;
+  height: 15px;
+  border: 10px outset; 
+  
+  background-color: #333;
+
+  float: left;
+}
+
+.square.empty
+{
+  border: 10px outset transparent;
+}
+
+.clear
+{
+  clear: both;
+}
