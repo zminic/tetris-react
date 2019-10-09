@@ -1,2 +1,5 @@
 # tetris-react
-Tetris game made with typescript and react
+
+A Tetris game created with React and Typescript.
+
+Try [Demo](https://therealmofcode.com/tetris-react/).
