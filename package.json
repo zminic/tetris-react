@@ -2,6 +2,7 @@
   "name": "tetris-react",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://therealmofcode.com/tetris-react",
   "dependencies": {
     "@types/jest": "24.0.15",
     "@types/lodash": "^4.14.136",
