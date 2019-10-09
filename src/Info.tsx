@@ -5,10 +5,9 @@ import Board from './Board';
 interface IInfoProps
 {
     nextShape: logic.Square[][];
-    isGameOver: boolean;
     style?: React.CSSProperties;
-    onPause?: () => void;
-    onNewGame?: () => void;
+    onPause?: (event: React.MouseEvent) => void;
+    onNewGame?: (event: React.MouseEvent) => void;
     lineCount: number
 }
 

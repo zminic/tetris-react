@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash';
+
 class Point
 {
     constructor(public readonly i: number, public readonly j: number) {}
@@ -86,23 +88,6 @@ export class Board
         this.shapePosition = new Point(-1 * this.shape.getHeight(), Math.floor((this.m - this.shape.getWidth()) / 2));
     }
 
-    private cloneSquares(): Square[][]
-    {
-        let result = [];
-
-        for (let i = 0; i < this.n; i++)
-        {
-            let row = [];
-
-            for (let j = 0; j < this.m; j++)
-                row.push(new Square(this.squares[i][j].color, this.squares[i][j].isEmpty));
-
-            result.push(row);
-        }
-
-        return result;
-    }
-
     private initSquares()
     {
         let result = [];
@@ -131,7 +116,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares();
+        let result = cloneDeep(this.squares);
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = 0; j < a; j++)
@@ -177,7 +162,7 @@ export class Board
 
     clearCompleted(): boolean
     {
-        let result = this.cloneSquares();
+        let result = cloneDeep(this.squares);
         let changed = false;
         let i = this.n - 1;
 
@@ -211,7 +196,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares();
+        let result = cloneDeep(this.squares);
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = 0; j < a; j++)
@@ -243,7 +228,7 @@ export class Board
         const def = this.shape.getDef();
         const a = this.shape.getWidth();
         const b = this.shape.getHeight();
-        let result = this.cloneSquares();
+        let result = cloneDeep(this.squares);
 
         for (let i = b - 1; i >= 0; i--)
         for (let j = a - 1; j >= 0; j--)
@@ -282,7 +267,7 @@ export class Board
         let p_rotated = new Point(p.i - (rotated.getHeight() - b), p.j + rotated.getWidth() >= this.m ? p.j - (rotated.getWidth() - a) : p.j);
 
         // work on cloned squares
-        let result = this.cloneSquares();
+        let result = cloneDeep(this.squares);
 
         // clear previous shape
         for (let i = 0; i < b; i++)

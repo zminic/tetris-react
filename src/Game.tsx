@@ -8,7 +8,7 @@ interface IGameState
 {
   squares: logic.Square[][],
   nextShape: logic.Square[][],
-  gameOver: boolean,
+  gameState: "new" | "paused" | "running" | "gameOver",
   lineCount: number
 }
 
@@ -16,7 +16,6 @@ export default class Game extends Component<{}, IGameState>
 {  
   private board: logic.Board;
   private timer: number = 0;
-  private paused: boolean = true;
 
   constructor(props: any)
   {
@@ -27,7 +26,7 @@ export default class Game extends Component<{}, IGameState>
     this.state = { 
       squares: this.board.squares,
       nextShape: this.board.getNextShape(),
-      gameOver: false,
+      gameState: "new",
       lineCount: 0
     };
   }
@@ -42,9 +41,15 @@ export default class Game extends Component<{}, IGameState>
     document.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  onTimerTick = () => this.moveDown();
+  onTimerTick = () => {
+    if (this.state.gameState === "running")
+      this.moveDown();
+  }
 
   handleKeyDown = (event: KeyboardEvent) => {
+
+    if (this.state.gameState !== 'running' && this.state.gameState !== 'paused') return;
+
     if (event.keyCode === 32) // space
     {
       while(this.board.moveShapeDown()){}
@@ -52,12 +57,14 @@ export default class Game extends Component<{}, IGameState>
       if (!this.board.gameOver)
         this.board.clearCompleted();
 
-      this.setState({ 
+      console.log(this.board.squares);
+
+      this.setState((state) => ({ 
         squares: this.board.squares,
         nextShape: this.board.getNextShape(),
-        gameOver: this.board.gameOver,
+        gameState: this.board.gameOver ? "gameOver" : state.gameState,
         lineCount: this.board.lineCount
-      });
+      }));
     }
     else if (event.keyCode === 37) // left
     {
@@ -95,11 +102,11 @@ export default class Game extends Component<{}, IGameState>
       if (this.board.clearCompleted())
         this.setState({ squares: this.board.squares});
 
-      this.setState({
+      this.setState((state) => ({
         nextShape: this.board.getNextShape(),
-        gameOver: this.board.gameOver,
+        gameState: this.board.gameOver ? "gameOver" : state.gameState,
         lineCount: this.board.lineCount
-      });
+      }));
     }
   }
 
@@ -111,27 +118,47 @@ export default class Game extends Component<{}, IGameState>
 
   togglePause()
   {
-    if (this.paused)
-      this.startTimer();
-    else
-      this.stopTimer();
+    this.setState((state) => {
+      if (state.gameState === "paused")
+      {
+        this.startTimer();
+        return { gameState: "running" };
+      }
+      else if (state.gameState === "running")
+      {
+        this.stopTimer();
+        return {gameState: "paused"};
+      }
 
-    this.paused = !this.paused;
+      return null;
+    });
   }
 
-  newGame()
+  pause(event: React.MouseEvent)
   {
+    this.togglePause();
+
+    // loose focus to prevent space button from clicking it
+    (event.target as any).blur();
+  }
+
+  newGame(event: React.MouseEvent)
+  {
+    console.log('new game');
+
     this.board = new logic.Board(10, 20);
-    this.paused = false;
 
     this.setState({ 
       squares: this.board.squares,
       nextShape: this.board.getNextShape(),
-      gameOver: false,
+      gameState: "running",
       lineCount: 0
     });
 
     this.startTimer();
+
+    // loose focus to prevent space button from clicking it
+    (event.target as any).blur();
   }
 
   getBoardWidth = () => this.board.m * 35;
@@ -142,19 +169,16 @@ export default class Game extends Component<{}, IGameState>
   render()
   {
     return (
-      <React.Fragment>
       <div className="game" style={{width: this.getGameWidth()}}>
         <Board squares={this.state.squares} style={{ width: this.getBoardWidth(), float: "left"}}></Board>
         <Info 
           nextShape={this.state.nextShape} 
           style={{ width: this.getInfoWidth(), float: "left"}} 
-          isGameOver={this.state.gameOver}
           lineCount={this.state.lineCount}
-          onPause={this.togglePause.bind(this)}
+          onPause={this.pause.bind(this)}
           onNewGame={this.newGame.bind(this)}></Info> 
         <div className="clear"></div>
       </div>
-      </React.Fragment>
     );
   }
 }
