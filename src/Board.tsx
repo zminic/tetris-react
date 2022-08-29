@@ -15,8 +15,7 @@ const Board: React.FC<IBoardProps> = (props) => {
             {row.map((square, j) =>
                 <Square
                     key={j}
-                    data={square}>
-                </Square>
+                    data={square} />
             )}
             <div className="clear" />
             </React.Fragment>

@@ -50,14 +50,12 @@ export default class Game extends Component<{}, IGameState>
 
     if (this.state.gameState !== 'running' && this.state.gameState !== 'paused') return;
 
-    if (event.keyCode === 32) // space
+    if (event.key === ' ') // space
     {
       while(this.board.moveShapeDown()){}
 
       if (!this.board.gameOver)
         this.board.clearCompleted();
-
-      console.log(this.board.squares);
 
       this.setState((state) => ({ 
         squares: this.board.squares,
@@ -66,26 +64,26 @@ export default class Game extends Component<{}, IGameState>
         lineCount: this.board.lineCount
       }));
     }
-    else if (event.keyCode === 37) // left
+    else if (event.key === 'ArrowLeft')
     {
       if (this.board.moveShapeLeft())
         this.setState({ squares: this.board.squares});
     }
-    else if (event.keyCode === 39) // right
+    else if (event.key === 'ArrowRight')
     {
       if (this.board.moveShapeRight())
         this.setState({ squares: this.board.squares});
     }
-    else if (event.keyCode === 38) // up (rotate)
+    else if (event.key === 'ArrowUp')
     {
       if (this.board.rotateShape())
         this.setState({ squares: this.board.squares});
     }
-    else if (event.keyCode === 40) // down
+    else if (event.key === 'ArrowDown')
     {
       this.moveDown();
     }
-    else if (event.keyCode === 80) // p (pause)
+    else if (event.key === 'p') // (pause)
     {
       this.togglePause();
     }
@@ -144,8 +142,6 @@ export default class Game extends Component<{}, IGameState>
 
   newGame(event: React.MouseEvent)
   {
-    console.log('new game');
-
     this.board = new logic.Board(10, 20);
 
     this.setState({ 
@@ -170,13 +166,14 @@ export default class Game extends Component<{}, IGameState>
   {
     return (
       <div className="game" style={{width: this.getGameWidth()}}>
-        <Board squares={this.state.squares} style={{ width: this.getBoardWidth(), float: "left"}}></Board>
+        <Board squares={this.state.squares} style={{ width: this.getBoardWidth(), float: "left"}} />
         <Info 
           nextShape={this.state.nextShape} 
           style={{ width: this.getInfoWidth(), float: "left"}} 
           lineCount={this.state.lineCount}
           onPause={this.pause.bind(this)}
-          onNewGame={this.newGame.bind(this)}></Info> 
+          onNewGame={this.newGame.bind(this)}
+          gameState={this.state.gameState} />
         <div className="clear"></div>
       </div>
     );

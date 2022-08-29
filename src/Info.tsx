@@ -8,7 +8,8 @@ interface IInfoProps
     style?: React.CSSProperties;
     onPause?: (event: React.MouseEvent) => void;
     onNewGame?: (event: React.MouseEvent) => void;
-    lineCount: number
+    lineCount: number;
+    gameState: string;
 }
 
 const Info: React.FC<IInfoProps> = (props) => {
@@ -24,7 +25,7 @@ const Info: React.FC<IInfoProps> = (props) => {
             <fieldset>
                 <legend>Actions</legend>
                 <p><button type="button" onClick={props.onNewGame} >New game</button></p>
-                <p><button type="button" onClick={props.onPause}>Pause</button></p>
+                <p><button type="button" onClick={props.onPause}>{props.gameState === 'paused' ? 'Start' : 'Pause'}</button></p>
             </fieldset>
 
             <fieldset>
