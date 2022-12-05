@@ -9,7 +9,6 @@
     "@types/node": "12.6.8",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "gh-pages": "^2.1.1",
     "immutable": "^4.0.0-rc.12",
     "lodash": "^4.17.15",
     "react": "^18.2.0",
@@ -39,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^4.0.0"
   }
 }
